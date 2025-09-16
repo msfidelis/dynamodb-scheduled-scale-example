@@ -1,3 +1,46 @@
+# DynamoDB Scheduled Auto Scaling - Terraform
+
+Este projeto implementa uma solução completa de **autoscaling agendado** para tabelas DynamoDB usando Application Auto Scaling da AWS. 
+
+O objetivo é ilustrar como configurar warm-up automático baseado em horários específicos tanto para a tabela principal quanto para Global Secondary Indexes (GSI) para suprir capacity repentinos em picos de acesso conhecidos.
+
+
+
+```mermaid
+graph TB
+    A[Scheduled Actions] --> B{Horário<br/>Atingido?}
+    
+    B -->|Sim| C[Application Auto Scaling<br/>Ajusta Capacidades]
+    B -->|Não| D[Aguarda Próximo<br/>Horário]
+    
+    C --> E[DynamoDB Table]
+    C --> F[GSI Index]
+    
+    E --> G[Read Capacity<br/>WarmUp/Down]
+    E --> H[Write Capacity<br/>WarmUp/Down]
+    
+    F --> I[GSI Read Capacity<br/>WarmUp/Down]
+    F --> J[GSI Write Capacity<br/>WarmUp/Down]
+    
+    G --> K[Target Tracking<br/>Monitora Utilização X%]
+    H --> K
+    I --> L[Target Tracking GSI<br/>Monitora Utilização X%]
+    J --> L
+    
+    K --> M[Auto Scale Up/Down<br/>]
+    L --> M
+    
+ 
+    
+    D --> B
+    
+    style A fill:#e1f5fe
+    style C fill:#f3e5f5
+    style E fill:#e8f5e8
+    style F fill:#e8f5e8
+```
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
