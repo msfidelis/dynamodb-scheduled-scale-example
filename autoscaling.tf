@@ -57,36 +57,36 @@ resource "aws_appautoscaling_policy" "table_write_policy" {
   }
 }
 
-# Scheduled Actions para Read Capacity baseadas na variável scheduled_actions_table
+# Scheduled Actions para Read Capacity 
 resource "aws_appautoscaling_scheduled_action" "table_read_scheduled" {
-  for_each = { for idx, action in var.scheduled_actions_table : idx => action }
+  count = length(var.scheduled_actions_table)
 
-  name               = "${var.table_name}-read-${each.value.name}"
+  name               = "${var.table_name}-read-${var.scheduled_actions_table[count.index].name}"
   service_namespace  = aws_appautoscaling_target.table_read_target.service_namespace
   resource_id        = aws_appautoscaling_target.table_read_target.resource_id
   scalable_dimension = aws_appautoscaling_target.table_read_target.scalable_dimension
-  schedule           = each.value.cron
-  timezone           = each.value.timezone
+  schedule           = var.scheduled_actions_table[count.index].cron
+  timezone           = var.scheduled_actions_table[count.index].timezone
 
   scalable_target_action {
-    min_capacity = each.value.rcu_min
-    max_capacity = each.value.rcu_max
+    min_capacity = var.scheduled_actions_table[count.index].rcu_min
+    max_capacity = var.scheduled_actions_table[count.index].rcu_max
   }
 }
 
-# Scheduled Actions para Write Capacity baseadas na variável scheduled_actions_table
+# Scheduled Actions para Write Capacity 
 resource "aws_appautoscaling_scheduled_action" "table_write_scheduled" {
-  for_each = { for idx, action in var.scheduled_actions_table : idx => action }
+  count = length(var.scheduled_actions_table)
 
-  name               = "${var.table_name}-write-${each.value.name}"
+  name               = "${var.table_name}-write-${var.scheduled_actions_table[count.index].name}"
   service_namespace  = aws_appautoscaling_target.table_write_target.service_namespace
   resource_id        = aws_appautoscaling_target.table_write_target.resource_id
   scalable_dimension = aws_appautoscaling_target.table_write_target.scalable_dimension
-  schedule           = each.value.cron
-  timezone           = each.value.timezone
+  schedule           = var.scheduled_actions_table[count.index].cron
+  timezone           = var.scheduled_actions_table[count.index].timezone
 
   scalable_target_action {
-    min_capacity = each.value.wcu_min
-    max_capacity = each.value.wcu_max
+    min_capacity = var.scheduled_actions_table[count.index].wcu_min
+    max_capacity = var.scheduled_actions_table[count.index].wcu_max
   }
 }
